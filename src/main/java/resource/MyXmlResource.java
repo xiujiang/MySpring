@@ -19,10 +19,11 @@ public class MyXmlResource implements Resource {
 
     String xmlPath;
 
-    MyXmlResource(String path){
+    public MyXmlResource(String path){
         this.xmlPath = path;
     }
 
+    @Override
     public Document readInfo(){
         return this.readInfo(xmlPath);
     }

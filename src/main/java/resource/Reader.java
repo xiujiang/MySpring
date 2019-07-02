@@ -1,6 +1,7 @@
 package resource;
 
 
+import factory.MyBeanFactory;
 import org.dom4j.Document;
 
 /**
@@ -10,7 +11,6 @@ import org.dom4j.Document;
  * @since 1.8
  */
 public interface Reader {
-
 
     void registerBeanDefinitions(Document document);
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class AbstractBeanDefinition implements MyBeanDefinition{
 
     //bean范围
-    public String scope = BeanScope.SINGLETON;
+    String scope = BeanScope.SINGLETON;
     //懒加载
     boolean lazy=false;
     //初始化方法

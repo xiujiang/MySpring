@@ -12,4 +12,5 @@ import lombok.Data;
 public class Property implements ChildBeanDefinition {
     private String name;
     private Object value;
+
 }

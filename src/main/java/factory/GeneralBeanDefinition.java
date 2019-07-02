@@ -16,4 +16,5 @@ public class GeneralBeanDefinition extends AbstractBeanDefinition{
     public GeneralBeanDefinition(String scope, boolean lazy, String initMethodName, String destroyMethodName, String beanClass, String targetClass, List<ChildBeanDefinition> childs) {
         super(scope, lazy, initMethodName, destroyMethodName, beanClass, targetClass, childs);
     }
+
 }

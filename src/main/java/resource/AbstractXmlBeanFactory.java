@@ -13,17 +13,7 @@ import java.util.concurrent.AbstractExecutorService;
  * @since 1.8
  */
 public class AbstractXmlBeanFactory{
-    Reader reader = new MyXmlBeanDefinitionReader();
-    Resource resource;
-    AbstractXmlBeanFactory(Resource resource){
-        this.resource = resource;
-        this.loadBeanDefinitions();
-    }
 
-    public void loadBeanDefinitions(){
-        Document documents = resource.readInfo();
-        reader.registerBeanDefinitions(documents);
-    }
 
 
 }

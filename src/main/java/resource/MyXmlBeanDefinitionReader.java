@@ -5,18 +5,12 @@ import constants.InjectRules;
 import constants.XmlRules;
 import exception.BeanDefinitionException;
 import exception.XmlReaderException;
-import factory.ChildBeanDefinition;
-import factory.ConstructorInfo;
-import factory.GeneralBeanDefinition;
-import factory.Property;
+import factory.*;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import utils.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author liuxiujiang
@@ -26,6 +20,11 @@ import java.util.Map;
  */
 public class MyXmlBeanDefinitionReader implements Reader{
 
+    DefaultListableBeanFactory defaultListableBeanFactory;
+
+    public MyXmlBeanDefinitionReader(DefaultListableBeanFactory defaultListableBeanFactory){
+        this.defaultListableBeanFactory = defaultListableBeanFactory;
+    }
 
     @Override
     public void registerBeanDefinitions(Document document) {
@@ -81,7 +80,12 @@ public class MyXmlBeanDefinitionReader implements Reader{
                 });
                 generalBeanDefinition.setChilds(childBeanDefinitions);
             }
-
+            defaultListableBeanFactory.registerBeanDefinition(attributeMap.get("id"),generalBeanDefinition);
+            if(!ObjectUtils.isEmpty(attributeMap.get("alies"))){
+                String[] args = attributeMap.get("alies").split(",");
+                List t = Arrays.asList(args);
+                defaultListableBeanFactory.registerAlies(attributeMap.get("id"),t);
+            }
         }
     }
 
