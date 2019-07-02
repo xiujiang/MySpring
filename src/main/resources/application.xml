@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans>
+    <bean id="person" alies="ta,t1" class="demo.entity.Person" scope="singleton" lazy="false" initMethod="init" destroyMethod="destroy">
+        <property name="name" value="张三三"></property>
+        <property name="age" value="23"></property>
+    </bean>
+
+    <bean id="animal" alies="a1,an" class="demo.entity.Animal" scope="singleton" lazy="true" initMethod="init" destroyMethod="destroy">
+        <property name="name" value="猪"></property>
+        <property name="age" value="233"></property>
+    </bean>
+</beans>
