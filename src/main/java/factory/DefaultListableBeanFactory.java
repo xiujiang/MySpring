@@ -64,15 +64,12 @@ public class DefaultListableBeanFactory {
     public <T> T doGetBean(String name,Class<T> requiredType,Object ...args){
         String beanName = transferName(name);
         Object obj = getSingleton(beanName);
-        System.out.println("1111"+beanName);
         //没有在缓存中获取到
         GeneralBeanDefinition beanDefinition = (GeneralBeanDefinition) myBeanDefinitions.get(beanName);
         if(obj == null){
             if(beanDefinition==null){
-                System.out.println("1111");
                 return null;
             }
-            System.out.println("1111");
             //单例的处理,这里对scope 就简单处理，Spring其实对单例的处理有很多
             if(BeanScope.SINGLETON.equals(beanDefinition.scope)){
                 obj = createBean(beanName,beanDefinition);
@@ -154,7 +151,8 @@ public class DefaultListableBeanFactory {
     public Object createBean(String beanName,GeneralBeanDefinition definition){
         try {
             Class clazz = Class.forName(definition.beanClass);
-            return clazz.newInstance();
+            Constructor c = clazz.getDeclaredConstructor();
+            return c.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

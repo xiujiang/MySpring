@@ -8,6 +8,6 @@
 
     <bean id="animal" alies="a1,an" class="demo.entity.Animal" scope="singleton" lazy="true" initMethod="init" destroyMethod="destroy">
         <property name="name" value="猪"></property>
-        <property name="age" value="233"></property>
+        <property name="weight" value="233"></property>
     </bean>
 </beans>

@@ -15,7 +15,7 @@ public class MySpring {
         XmlBeanFactory xmlBeanFactory = new XmlBeanFactory("src/main/resources/application.xml");
         xmlBeanFactory.showBeanDefinitionInfo();
 
-        Animal animal = xmlBeanFactory.getBean("a1");
+        Animal animal = xmlBeanFactory.getBean("animal");
         System.out.println(animal);
 
     }

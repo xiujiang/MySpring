@@ -13,13 +13,13 @@ public class Animal {
     private Integer id;
     private String name;
     private String weight;
-    Animal(Integer id,String name,String weight){
+    public Animal(Integer id,String name,String weight){
 
     }
-    Animal(String name,String weight){
+    public Animal(String name,String weight){
 
     }
-    Animal(){
+    public Animal(){
 
     }
 }
