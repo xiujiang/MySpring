@@ -6,6 +6,8 @@ import factory.XmlBeanFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * @author liuxiujiang
@@ -18,7 +20,6 @@ public class MySpring {
     public static void main(String[] args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         XmlBeanFactory xmlBeanFactory = new XmlBeanFactory("src/main/resources/application.xml");
         xmlBeanFactory.showBeanDefinitionInfo();
-
         Animal animal = xmlBeanFactory.getBean("animal");
         Person person = xmlBeanFactory.getBean("t1");
         System.out.println(person);
