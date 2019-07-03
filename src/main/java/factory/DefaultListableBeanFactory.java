@@ -131,13 +131,16 @@ public class DefaultListableBeanFactory {
             Constructor[] constructors = clazz.getDeclaredConstructors();
             //找一个合适的构造器
             int argsCount = childList.size();
-            Object[] objects = childList.stream().sorted().map(o->{return ((ConstructorInfo)o).getValue();}).toArray();
+            Object[] objects = childList.stream().sorted((o1, o2) -> {
+                return ((ConstructorInfo)o1).getIndex().compareTo(((ConstructorInfo)o2).getIndex());
+            }).map(o->{return ((ConstructorInfo)o).getValue();}).toArray();
             for (Constructor constructor : constructors) {
                 if(constructor.getParameterCount()!=argsCount){
                     continue;
                 }
                 try {
-                    constructor.newInstance(objects);
+                    constructor.setAccessible(true);
+                    Object os = constructor.newInstance(objects);
                 }catch (Exception e){
                     e.printStackTrace();
                     continue;

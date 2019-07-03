@@ -14,10 +14,13 @@ public class Animal {
     private String name;
     private String weight;
     public Animal(Integer id,String name,String weight){
-
+        this.id=id;
+        this.name = name;
+        this.weight = weight;
     }
     public Animal(String name,String weight){
-
+        this.name = name;
+        this.weight = weight;
     }
     public Animal(){
 

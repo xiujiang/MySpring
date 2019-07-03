@@ -7,7 +7,7 @@
     </bean>
 
     <bean id="animal" alies="a1,an" class="demo.entity.Animal" scope="singleton" lazy="true" initMethod="init" destroyMethod="destroy">
-        <property name="name" value="猪"></property>
-        <property name="weight" value="233"></property>
+        <constructor-arg index="2" value="233"></constructor-arg>
+        <constructor-arg index="1" value="猪"></constructor-arg>
     </bean>
 </beans>
