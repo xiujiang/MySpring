@@ -18,8 +18,11 @@ package factory;/*
 public class MyClassPathXmlApplicationContext extends AbstractApplicationContext{
 
     //可以读取多个配置文件的内容
-    MyClassPathXmlApplicationContext(String... configLocations){
-//        setLocations();
+    MyClassPathXmlApplicationContext(boolean refresh, String... configLocations){
+        setLocations(configLocations);
+        if(refresh){
+            refresh();
+        }
     }
 
 }

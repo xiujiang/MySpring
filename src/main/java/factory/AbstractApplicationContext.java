@@ -13,6 +13,27 @@ package factory;/*
  * @datetime 2019/7/3
  * @since 1.8
  */
-public class AbstractApplicationContext {
+public abstract class AbstractApplicationContext {
+    String[] locations = new String[5];
 
+    public void setLocations(String[] locations) {
+        this.locations = locations;
+    }
+
+    //其实ApplicationContext的refresh 就是在注册bean的基础上，提供了更多的功能
+    //按照Srping顺序
+    public void refresh(){
+        //刷新或注册beanFactory
+        MyBeanFactory beanFactory = obtainFreshBeanFactory();
+
+        //提前对beanFactory注册一些功能
+        prepareBeanFactory(beanFactory);
+    }
+
+    private MyBeanFactory obtainFreshBeanFactory(){
+        return null;
+    }
+    public void prepareBeanFactory(MyBeanFactory beanFactory){
+
+    }
 }
