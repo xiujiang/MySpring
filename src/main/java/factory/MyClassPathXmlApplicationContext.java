@@ -7,6 +7,11 @@ package factory;/*
  */
 
 
+import org.dom4j.Document;
+import resource.MyXmlBeanDefinitionReader;
+import resource.MyXmlResource;
+import resource.Reader;
+
 /**
  * ApplicationContext其实就在BeanFactory的基础上增加了更多的功能
  * 基本的IOC功能还是由beanFactory实现
@@ -17,12 +22,34 @@ package factory;/*
  */
 public class MyClassPathXmlApplicationContext extends AbstractApplicationContext{
 
+    Reader reader = null;
+
     //可以读取多个配置文件的内容
-    MyClassPathXmlApplicationContext(boolean refresh, String... configLocations){
+    public MyClassPathXmlApplicationContext(boolean refresh, String... configLocations){
         setLocations(configLocations);
         if(refresh){
             refresh();
         }
     }
 
+
+    @Override
+    protected void loadBeanDefinitions(String[] locations) {
+        reader = new MyXmlBeanDefinitionReader(this.beanFactory);
+        for (String location : locations) {
+            MyXmlResource resource = new MyXmlResource(location);
+            this.loadBeanDefinitions(resource);
+        }
+
+    }
+
+    public void loadBeanDefinitions(MyXmlResource resource){
+        Document documents = resource.readInfo();
+        reader.registerBeanDefinitions(documents);
+    }
+
+    @Override
+    public Object getBean(String beanName) {
+        return this.beanFactory.getBean(beanName);
+    }
 }

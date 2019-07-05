@@ -8,10 +8,10 @@ import utils.ObjectUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -20,13 +20,15 @@ import java.util.stream.Collectors;
  * @datetime 2019/7/1
  * @since 1.8
  */
-public class DefaultListableBeanFactory {
+public class DefaultListableBeanFactory implements MyBeanFactory {
 
-    private static Map<String,MyBeanDefinition> myBeanDefinitions = new HashMap<String,MyBeanDefinition>();
+    protected static Map<String,MyBeanDefinition> myBeanDefinitions = new HashMap<String,MyBeanDefinition>();
     //别名
     private static Map<String,String> myAliesMap = new HashMap<>();
 
     private static Map<String,Object> mySingletonObjects = new ConcurrentHashMap<>(256);
+
+    private final List<MyBeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
     public void registerBeanDefinition(String name,MyBeanDefinition myBeanDefinition){
         if(myBeanDefinitions.containsKey(name)){
@@ -51,9 +53,6 @@ public class DefaultListableBeanFactory {
         });
     }
 
-    public <T> T getBean(String name){
-        return doGetBean(name,null,null);
-    }
     public <T> T getBean(String name,Class<T> requiredType){
         return doGetBean(name,requiredType,null);
     }
@@ -64,6 +63,9 @@ public class DefaultListableBeanFactory {
     public <T> T doGetBean(String name,Class<T> requiredType,Object ...args){
         String beanName = transferName(name);
         Object obj = getSingleton(beanName);
+        if(obj != null){
+            return (T) obj;
+        }
         //没有在缓存中获取到
         GeneralBeanDefinition beanDefinition = (GeneralBeanDefinition) myBeanDefinitions.get(beanName);
         if(obj == null){
@@ -84,15 +86,52 @@ public class DefaultListableBeanFactory {
         }
         //注入属性
         populateBean(beanDefinition,beanName);
-
+        initializeBean(beanName,beanDefinition,obj);
         //这里先暂时不考虑转换covert
 //        if(requiredType != null && requiredType.isInstance(obj)){
         if(requiredType !=null){
-            return (T)obj;
+            return requiredType.cast(obj);
         }
         return (T)obj;
     }
 
+    //在这里执行普通的BeanPostProcessor
+    public void initializeBean(String beanName,MyBeanDefinition beanDefinition,Object obj){
+        //这里Spring 还注入了一些Aware的属性
+
+        for(MyBeanPostProcessor postProcessor:getBeanPostProcessors()){
+            obj = postProcessor.postProcessBeforeInitialization(obj,beanName);
+        }
+
+        //执行init 方法 如果有的话
+        //其实也是反射
+        try {
+            initMethod((GeneralBeanDefinition) beanDefinition,obj);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        for(MyBeanPostProcessor postProcessor:getBeanPostProcessors()){
+            obj = postProcessor.postProcessAfterInitialization(obj,beanName);
+        }
+    }
+
+
+
+    public void initMethod(GeneralBeanDefinition myBeanDefinition,Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Class clazz = obj.getClass();
+        String initMethodName = myBeanDefinition.initMethodName;
+        if(ObjectUtils.isEmpty(initMethodName)){
+           return;
+        }
+        Method method =clazz.getMethod(initMethodName,null);
+        method.setAccessible(true);
+        method.invoke(obj,null);
+    }
 
     //这个name 是beanName,或者是alies
     public String transferName(String name){
@@ -161,5 +200,63 @@ public class DefaultListableBeanFactory {
         }
 
         return null;
+    }
+
+    @Override
+    public Object getBean(String beanName) {
+        return doGetBean(beanName,null,null);
+    }
+
+    protected void clear(){
+        mySingletonObjects =  new ConcurrentHashMap<>(256);
+        myAliesMap = new HashMap<>();
+        myBeanDefinitions = new HashMap<>();
+    }
+
+    public void addBeanPostProcessor(MyBeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+
+    List<String> getBeanNamesByTyps(Class requiredType){
+        if(requiredType == null){
+            return new ArrayList<>();
+        }
+        return doGetBeanNamsByTypes(requiredType);
+    }
+
+    List<MyBeanPostProcessor> getBeanPostProcessors(){
+        return this.beanPostProcessors;
+    }
+
+    List<String> doGetBeanNamsByTypes(Class requiredType){
+        //获取所有Names
+        Set<String> beanDefinitionNames = getBeanNams();
+        List<String> beanNames = new ArrayList<>();
+        //其实Spring 做了挺多事情，如果有ParentBeanFactory 则交给父类去找，如果有targetType 也会判断这种
+        beanDefinitionNames.forEach(o->{
+            Object obj = getSingleton(o);
+            //如果缓存存在，则直接判断
+            if(!ObjectUtils.isEmpty(obj)){
+                if(requiredType.isAssignableFrom(obj.getClass())){
+                    beanNames.add(o);
+                }
+            }
+            //从beanDefinition 中获取
+            GeneralBeanDefinition beanDefinition = (GeneralBeanDefinition) myBeanDefinitions.get(o);
+            try {
+                Class beanClass = Class.forName(beanDefinition.beanClass);
+                if(beanClass != null && requiredType.isAssignableFrom(beanClass)){
+                    beanNames.add(o);
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        return beanNames;
+    }
+
+    Set<String> getBeanNams(){
+        return myBeanDefinitions.keySet();
     }
 }

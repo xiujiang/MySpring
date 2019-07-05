@@ -57,8 +57,8 @@ public class MyXmlBeanDefinitionReader implements Reader{
         if(XmlRules.BEAN.equals(o.getName())){
             Map<String,String> attributeMap = getAttributeValue(o);
             GeneralBeanDefinition generalBeanDefinition = new GeneralBeanDefinition(
-                    attributeMap.get("scope"),new Boolean(attributeMap.get("lazy")),attributeMap.get("initMethodName"),
-                    attributeMap.get("destroyMethodName"),attributeMap.get("beanClass"),attributeMap.get("targetClass"),null
+                    attributeMap.get("scope"),new Boolean(attributeMap.get("lazy")),attributeMap.get("initMethod"),
+                    attributeMap.get("destroyMethod"),attributeMap.get("beanClass"),attributeMap.get("targetClass"),null
             );
             List<Element> childElements = o.elements();
             if(!ObjectUtils.isEmpty(childElements)){

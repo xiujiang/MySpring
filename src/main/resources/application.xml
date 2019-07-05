@@ -10,4 +10,5 @@
         <constructor-arg index="2" value="233"></constructor-arg>
         <constructor-arg index="1" value="猪"></constructor-arg>
     </bean>
+    <bean id="defaultBeanPostProcessor" class="demo.DefaultBeanPostProcessor" scope="singleton"></bean>
 </beans>
