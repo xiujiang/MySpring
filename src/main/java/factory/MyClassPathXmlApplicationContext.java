@@ -50,6 +50,6 @@ public class MyClassPathXmlApplicationContext extends AbstractApplicationContext
 
     @Override
     public Object getBean(String beanName) {
-        return this.beanFactory.getBean(beanName);
+        return this.beanFactory.getSingleton(beanName);
     }
 }
